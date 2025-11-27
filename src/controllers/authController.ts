@@ -1,4 +1,4 @@
-import { OAuth2Client } from "google-auth-library";
+const { OAuth2Client }: any = require("google-auth-library");
 import jwt from "jsonwebtoken";
 import User from "../models/User";
 
