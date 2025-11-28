@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   createRoom,
   deleteRoom,
+  getRoom,
   getRooms,
   updateRoom,
 } from "../controllers/rooms.controller";
@@ -12,6 +13,7 @@ const router = Router();
 
 router.post("/create", authMiddleWare, upload.single("image"), createRoom);
 router.get("/list", authMiddleWare, getRooms);
+router.get("/:id", authMiddleWare, getRoom);
 router.put("/:id", authMiddleWare, upload.single("image"), updateRoom);
 router.delete("/:id", authMiddleWare, deleteRoom);
 
