@@ -6,14 +6,28 @@ let io;
 export const initSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: [
-        "http://localhost:5173",
-        "https://main.d16zm1qoja2vlw.amplifyapp.com",
-      ],
-      methods: ["GET", "POST"],
+      origin: (origin, callback) => {
+        const allowedOrigins = [
+          "http://localhost:5173",
+        ];
+  
+        // allow all Amplify subdomains
+        if (origin && origin.endsWith(".amplifyapp.com")) {
+          return callback(null, true);
+        }
+  
+        // allow localhost or no-origin (mobile/native/testing)
+        if (!origin || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+  
+        return callback(new Error("Not allowed by CORS"));
+      },
       credentials: true,
+      methods: ["GET", "POST"],
     },
   });
+  
 
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token;
