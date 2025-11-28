@@ -8,7 +8,7 @@ export const initSocket = (server) => {
     cors: {
       origin: [
         "http://localhost:5173",
-        "https://main.d16zm1qoja2vlw.amplifyapp.com/",
+        "https://main.d16zm1qoja2vlw.amplifyapp.com",
       ],
       methods: ["GET", "POST"],
       credentials: true,
