@@ -7,17 +7,17 @@ export const bookRoom = async (req, res) => {
   try {
     const { roomId, userId, startTime, endTime } = req.body;
     const io = getIO();
-    // Fix: Missing await
+    
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Check for time conflict
+
     const conflict = await Booking.findOne({
       roomId,
-      startTime: { $lt: endTime }, // starts before end
-      endTime: { $gt: startTime }, // ends after start
+      startTime: { $lt: endTime }, 
+      endTime: { $gt: startTime },
       status: "booked",
     });
 
@@ -28,9 +28,14 @@ export const bookRoom = async (req, res) => {
       });
     }
 
-    // Create booking
-    const booking = await Booking.create(req.body);
-    // 1️⃣ Check if booking starts now or in past → set room occupied immediately
+
+    const booking = await Booking.create({
+      roomId,
+      userId,
+      startTime: new Date(startTime), 
+      endTime: new Date(endTime),
+    });
+   
     const now = new Date();
     if (new Date(startTime) <= now && now < new Date(endTime)) {
       const updatedRoom = await Room.findByIdAndUpdate(
@@ -42,14 +47,7 @@ export const bookRoom = async (req, res) => {
         io.emit("room-updated", { roomId: updatedRoom._id });
       }
     }
-    // Send email
-    // await sendEmail(
-    //   user.email,
-    //   "Room Booked Successfully",
-    //   `<p>Your room booking is confirmed.</p>`
-    // );
-
-    // Emit socket event
+  
  
     io.emit("booking-created", booking);
 
